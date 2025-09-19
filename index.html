@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+      media="(prefers-color-scheme: dark)"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+    <script type="module" src="/src/main.ts" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a href="https://github.com/danimydev/ts-layout" target="_blank"
+          >GitHub</a
+        >
+      </nav>
+    </header>
+    <main>
+      <h1>TsLayout</h1>
+      <p>
+        TsLayout is a library you can use to build ui libraries on top of it, it
+        provides auto layout (sizing & positioning). I was inspired by Clay and
+        decided to write my own version of it using TypeScript because I do not
+        know C... yet :).
+      </p>
+      <h2>How can you use it?</h2>
+      <p>
+        Just copy the
+        <a href="https://github.com/danimydev/ts-layout" target="_blank"
+          >source code</a
+        >, it is just one TypeScript file!
+      </p>
+      <h2>How to extend TsLayout?</h2>
+      <p>
+        Since TsLayout only provides the bare bones to build a ui layout system,
+        you will need to extend it if you want to handle styling and rendering
+        but it's not complicated. Here is a quick example of how it may look
+        like.
+      </p>
+      <p>First, create a type that extends from TsLayout.</p>
+      <pre><code class="language-typescript">
+type UIElement = TsLayout.LayoutElement & {
+  // overrided TsLayout props
+  parent?: UIElement;
+  children: UIElement[];
+
+  style: {
+    backgroundColor: string;
+    fontColor: string;
+    fontSize: number;
+    fontFamily: string;
+    borderSize: number;
+    borderColor: string;
+  };
+  text?: string;
+};
+      </code></pre>
+      <p>
+        You can create a function that creates this element with default values
+        or not, that is up to you and your needs. TsLayout provides a function
+        for this but this will only return a
+        <code class="language-typescript">LayoutElement</code> and it will only
+        work for layout calculations. Here is an example that creates a custom
+        <code class="language-typescript">UIElement</code> that has some style
+        props and possibly text.
+      </p>
+      <pre><code class="language-typescript">
+const DEFAULT_STYLE: UIElement["style"] = {
+  backgroundColor: "transparent",
+  fontColor: "black",
+  fontSize: 16,
+  fontFamily: "monospace",
+  borderColor: "black",
+  borderSize: 0,
+};
+
+function createUIElement(
+  partialUIElement: DeepPartial&lt;UIElement&lt; = {},
+  parent?: UIElement,
+) {
+  const baseUIElement: UIElement = {
+    ...TsLayout.createLayoutElement(partialUIElement, parent),
+    parent,
+    children: [],
+    style: DEFAULT_STYLE,
+  };
+
+  const style: UIElement["style"] = {
+    ...baseUIElement.style,
+    ...partialUIElement.style,
+  };
+
+  const uiElement = Object.assign(baseUIElement, partialUIElement);
+
+  uiElement.style = style;
+
+  parent?.children.push(uiElement);
+
+  return uiElement;
+}
+      </code></pre>
+      <p>
+        TsLayout only works for 2d use cases. But the good news is that it lets
+        you choose which context to use so you can write the render code and use
+        both size and position as
+        <code class="language-typescript">Vector2d.x</code> and
+        <code class="language-typescript">Vector2d.y</code> to draw your layout
+        on a screen. You can decide how to handle text, color, fonts and other
+        stuff.
+      </p>
+      <p>
+        Here is an example on how to use TsLayout with a
+        <code class="language-typescript">HTMLCanvasElement</code> using it's
+        <code class="language-typescript">CanvasRenderingContext2D</code>.
+      </p>
+      <p>
+        For this example I use a helper function that helps me get the size as
+        <code class="language-typescript">Vector2d&lt;number&gt;.</code>
+      </p>
+      <pre><code class="language-typescript">
+function getTextSize(text: string, context: CanvasRenderingContext2D) {
+  const metrics = context.measureText(text);
+  const ascent = metrics.emHeightAscent ?? 0;
+  const descent = metrics.emHeightDescent ?? 0;
+  return { x: metrics.width, y: ascent + descent };
+}
+      </code></pre>
+      <p>
+        Here we create the ui that is being displayed bellow on a
+        <code class="language-typescript">HTMLCanvasElement</code>.
+      </p>
+      <pre><code class="language-typescript">
+const appPadding = 20;
+const appChildrenGap = 20;
+const app = createUIElement({
+  size: {
+    x: context.canvas.width - appPadding * 2 - appChildrenGap,
+    y: context.canvas.height - appPadding * 2,
+  },
+  sizeBehavior: "FIXED",
+  padding: {
+    x: appPadding,
+    y: appPadding,
+  },
+  childrenGap: appChildrenGap,
+  layoutDirection: "LEFT_TO_RIGHT",
+  style: {
+    backgroundColor: "gray",
+  },
+});
+
+createTextUIElement(
+  {
+    style: {
+      fontSize: 32,
+    },
+    text: "TS LAYOUT",
+  },
+  context,
+  app,
+);
+
+const uiElementExampleContextMenuSection = createUIElement(
+  {
+    sizeBehavior: "GROW",
+    layoutDirection: "TOP_TO_BOTTOM",
+    childrenGap: 10,
+    style: {
+      backgroundColor: "white",
+    },
+  },
+  app,
+);
+
+createTextUIElement(
+  {
+    text: "Context Menu",
+  },
+  context,
+  uiElementExampleContextMenuSection,
+);
+
+const contextMenuContainer = createUIElement(
+  {
+    layoutDirection: "TOP_TO_BOTTOM",
+    padding: { x: 10, y: 10 },
+    childrenGap: 10,
+    style: {
+      backgroundColor: "black",
+    },
+  },
+  uiElementExampleContextMenuSection,
+);
+
+
+for (let i = 0; i &lt; 5; i++) {
+  const contextMenuItemContainer = createUIElement(
+    {
+      padding: { x: 10, y: 10 },
+      childrenGap: 10,
+      sizeBehavior: "GROW",
+      style: {
+        backgroundColor: "red",
+      },
+    },
+    contextMenuContainer,
+  );
+
+  createTextUIElement(
+    {
+      style: {
+        fontColor: "white",
+        backgroundColor: "blue",
+      },
+      text: `Action - ${(i + 1) ** (i + 1)}`,
+    },
+    context,
+    contextMenuItemContainer,
+  );
+}
+      </code></pre>
+      <p>
+        Now we just need to update our root layout element. This will run
+        several tree passes to our layout in order to calculate size, grow and
+        position (in that order) so once we are rendering we have the correct
+        information.
+      </p>
+      <pre><code class="language-typescript">
+TsLayout.updateLayoutElement(app);
+render(app, context);
+      </code></pre>
+      <canvas></canvas>
+    </main>
+  </body>
+</html>
