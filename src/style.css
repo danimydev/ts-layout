@@ -4,6 +4,12 @@
   color-scheme: light dark;
 }
 
+body {
+  padding: 20px 0px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -11,6 +17,12 @@ h1 {
 
 pre * {
   background-color: transparent !important;
+}
+
+canvas {
+  max-width: 720px;
+  margin: 20px auto;
+  display: block;
 }
 
 @media (prefers-color-scheme: dark) {

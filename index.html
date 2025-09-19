@@ -53,7 +53,9 @@
         like.
       </p>
       <p>First, create a type that extends from TsLayout.</p>
-      <pre><code class="language-typescript">
+      <details>
+        <summary>Show code</summary>
+        <pre><code class="language-typescript">
 type UIElement = TsLayout.LayoutElement & {
   // overrided TsLayout props
   parent?: UIElement;
@@ -69,7 +71,8 @@ type UIElement = TsLayout.LayoutElement & {
   };
   text?: string;
 };
-      </code></pre>
+        </code></pre>
+      </details>
       <p>
         You can create a function that creates this element with default values
         or not, that is up to you and your needs. TsLayout provides a function
@@ -79,7 +82,9 @@ type UIElement = TsLayout.LayoutElement & {
         <code class="language-typescript">UIElement</code> that has some style
         props and possibly text.
       </p>
-      <pre><code class="language-typescript">
+      <details>
+        <summary>Show code</summary>
+        <pre><code class="language-typescript">
 const DEFAULT_STYLE: UIElement["style"] = {
   backgroundColor: "transparent",
   fontColor: "black",
@@ -113,7 +118,8 @@ function createUIElement(
 
   return uiElement;
 }
-      </code></pre>
+        </code></pre>
+      </details>
       <p>
         TsLayout only works for 2d use cases. But the good news is that it lets
         you choose which context to use so you can write the render code and use
@@ -132,19 +138,24 @@ function createUIElement(
         For this example I use a helper function that helps me get the size as
         <code class="language-typescript">Vector2d&lt;number&gt;.</code>
       </p>
-      <pre><code class="language-typescript">
+      <details>
+        <summary>Show code</summary>
+        <pre><code class="language-typescript">
 function getTextSize(text: string, context: CanvasRenderingContext2D) {
   const metrics = context.measureText(text);
   const ascent = metrics.emHeightAscent ?? 0;
   const descent = metrics.emHeightDescent ?? 0;
   return { x: metrics.width, y: ascent + descent };
 }
-      </code></pre>
+        </code></pre>
+      </details>
       <p>
         Here we create the ui that is being displayed bellow on a
         <code class="language-typescript">HTMLCanvasElement</code>.
       </p>
-      <pre><code class="language-typescript">
+      <details>
+        <summary>Show code</summary>
+        <pre><code class="language-typescript">
 const appPadding = 20;
 const appChildrenGap = 20;
 const app = createUIElement({
@@ -233,17 +244,21 @@ for (let i = 0; i &lt; 5; i++) {
     contextMenuItemContainer,
   );
 }
-      </code></pre>
+        </code></pre>
+      </details>
       <p>
         Now we just need to update our root layout element. This will run
         several tree passes to our layout in order to calculate size, grow and
         position (in that order) so once we are rendering we have the correct
         information.
       </p>
-      <pre><code class="language-typescript">
+      <details>
+        <summary>Show code</summary>
+        <pre><code class="language-typescript">
 TsLayout.updateLayoutElement(app);
 render(app, context);
-      </code></pre>
+        </code></pre>
+      </details>
       <canvas></canvas>
     </main>
   </body>

@@ -7,10 +7,8 @@ if (!canvasElement) {
   throw new Error("could not find any canvas element");
 }
 
-document.body.appendChild(canvasElement);
-
-canvasElement.width = 775;
-canvasElement.height = 600;
+canvasElement.width = 720;
+canvasElement.height = 480;
 
 const context = canvasElement.getContext("2d");
 
