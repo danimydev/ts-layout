@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vitest --globals",
+    "test": "vitest run --globals",
+    "build": "./build.sh"
   },
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "typescript": "~5.8.3",
-    "vite": "^7.1.6"
+    "vitest": "^3.2.4"
   }
 }
