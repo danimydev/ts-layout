@@ -1,11 +1,3 @@
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object
-    ? T[P] extends Function
-      ? T[P]
-      : DeepPartial<T[P]>
-    : T[P];
-};
-
 type Vector2d<T> = {
   x: T;
   y: T;
@@ -23,7 +15,7 @@ export type LayoutElement = {
 };
 
 export function createLayoutElement(
-  partialLayoutElement: DeepPartial<LayoutElement> = {},
+  partialLayoutElement: Partial<LayoutElement> = {},
   parent?: LayoutElement,
 ): LayoutElement {
   const baseLayoutElement: LayoutElement = {
@@ -75,13 +67,13 @@ function updateLayoutElementSize(layoutElement: LayoutElement) {
   layoutElement.size.y += 2 * layoutElement.padding.y;
 
   if (layoutElement.layoutDirection === "LEFT_TO_RIGHT") {
-    layoutElement.size.x +=
-      layoutElement.childrenGap * (layoutElement.children.length - 1);
+    layoutElement.size.x += layoutElement.childrenGap *
+      (layoutElement.children.length - 1);
   }
 
   if (layoutElement.layoutDirection === "TOP_TO_BOTTOM") {
-    layoutElement.size.y +=
-      layoutElement.childrenGap * (layoutElement.children.length - 1);
+    layoutElement.size.y += layoutElement.childrenGap *
+      (layoutElement.children.length - 1);
   }
 
   updateLayoutElementParentSize(layoutElement);
@@ -100,11 +92,11 @@ function getLayoutElementRemainingSize(
     remainingWidth -= layoutElement.children[i].size.x;
     remainingHeight -= layoutElement.children[i].size.y;
   }
-  remainingWidth -=
-    (layoutElement.children.length - 1) * layoutElement.childrenGap;
+  remainingWidth -= (layoutElement.children.length - 1) *
+    layoutElement.childrenGap;
 
-  remainingHeight -=
-    (layoutElement.children.length - 1) * layoutElement.childrenGap;
+  remainingHeight -= (layoutElement.children.length - 1) *
+    layoutElement.childrenGap;
 
   return {
     x: remainingWidth,
@@ -123,13 +115,13 @@ function updateChildElementsSizeWitGrowSizingBeavior(
     if (childElement.sizeBehavior === "GROW") {
       if (layoutElement.layoutDirection === "LEFT_TO_RIGHT") {
         childElement.size.x += remainingSize.x;
-        childElement.size.y =
-          layoutElement.size.y - 2 * layoutElement.padding.y;
+        childElement.size.y = layoutElement.size.y -
+          2 * layoutElement.padding.y;
       }
 
       if (layoutElement.layoutDirection === "TOP_TO_BOTTOM") {
-        childElement.size.x =
-          layoutElement.size.x - 2 * layoutElement.padding.x;
+        childElement.size.x = layoutElement.size.x -
+          2 * layoutElement.padding.x;
         childElement.size.y += remainingSize.y;
       }
     }
@@ -143,10 +135,10 @@ function updateBaseChildElementsPosition(layoutElement: LayoutElement) {
     let leftOffset = 0;
     for (let i = 0; i < layoutElement.children.length; i++) {
       const childElement = layoutElement.children[i];
-      childElement.position.x +=
-        layoutElement.position.x + layoutElement.padding.x + leftOffset;
-      childElement.position.y +=
-        layoutElement.position.y + layoutElement.padding.y;
+      childElement.position.x += layoutElement.position.x +
+        layoutElement.padding.x + leftOffset;
+      childElement.position.y += layoutElement.position.y +
+        layoutElement.padding.y;
       leftOffset += childElement.size.x + layoutElement.childrenGap;
       updateBaseChildElementsPosition(childElement);
     }
@@ -156,10 +148,10 @@ function updateBaseChildElementsPosition(layoutElement: LayoutElement) {
     let topOffset = 0;
     for (let i = 0; i < layoutElement.children.length; i++) {
       const childElement = layoutElement.children[i];
-      childElement.position.x +=
-        layoutElement.position.x + layoutElement.padding.x;
-      childElement.position.y +=
-        layoutElement.position.y + layoutElement.padding.y + topOffset;
+      childElement.position.x += layoutElement.position.x +
+        layoutElement.padding.x;
+      childElement.position.y += layoutElement.position.y +
+        layoutElement.padding.y + topOffset;
       topOffset += childElement.size.y + layoutElement.childrenGap;
       updateBaseChildElementsPosition(childElement);
     }
