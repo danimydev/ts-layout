@@ -29,7 +29,11 @@ export function createLayoutElement(
     childrenGap: 0,
   };
 
-  return Object.assign(baseLayoutElement, partialLayoutElement);
+  const layoutElement = Object.assign(baseLayoutElement, partialLayoutElement);
+
+  parent?.children.push(layoutElement);
+
+  return layoutElement;
 }
 
 function updateLayoutElementParentSize(layoutElement: LayoutElement) {
