@@ -1,7 +1,7 @@
 {
   "name": "@danimydev/ts-layout",
   "version": "0.1.0-alpha",
-  "license": "The Unlicense",
+  "license": "Unlicense",
   "exports": {
     ".": "./mod.ts"
   },
